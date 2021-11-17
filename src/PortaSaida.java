@@ -61,6 +61,11 @@ public class PortaSaida extends Porta{
 
     }
 
+    public void receivePacote(String pacote){
+        this.pacote = pacote;
+    }
+
+
     public void run(){
         while(true){
             guardarPacote();
