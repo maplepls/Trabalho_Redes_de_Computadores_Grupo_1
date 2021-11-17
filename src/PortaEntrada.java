@@ -1,9 +1,7 @@
 import java.io.FileWriter;
-import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Queue;
-import java.util.Random;
 
 public class PortaEntrada extends Porta{
 
@@ -35,33 +33,41 @@ public class PortaEntrada extends Porta{
         String pacote = ID + "_" + currentPackageId + " " + formatter.format(date);
         currentPackageId++;
 
-        if( (double)Math.random() < (double)dropProbability/100.00){ //Teste de drop
+        if( (double)Math.random() < (double)dropProbability/100.00 && !exit){ //Teste de drop
             //bota no log de drop
             return;
         }
 
-        //bota no log de criado na fila
+        if(!exit){
+            //bota no log de criado
+        }
 
         //Se pacote foi criado, testar se fila ta cheia
-        if(filaPacotes.size() >= size){
+        if(filaPacotes.size() >= size && !exit){
             //kill Pacote
-            //sair da funcao
+            //bota no log de descartados pq fila tava cheia
             return;
         }
 
-        //bota no log de inseridos na fila
-        inserirFila(pacote);
+        if(!exit){
+            inserirFila(pacote);
+        }
+
     }
 
     public void run (){
-        while(true) {
+        while(!exit) {
             try {
                 Thread.sleep(packageGenerationDelay);
-                criarPacote();
+                if(!exit){
+                    criarPacote();
+                    System.out.println("oi da Porta de entrada " + ID);
+                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
+        System.out.println("Aaaaaa a porta de entrada " + ID + " morreuu naooo aaaaaa pepposad :(");
     }
 
 

@@ -48,8 +48,11 @@ public class PortaSaida extends Porta{
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+        }
 
-        } while((double) Math.random() < (double) p / 100.00);
+        if(!exit){
+            //bota no log de pacotes inseridos com sucesso
+        }
 
         String[] nomeCortado = pacote.split(" ");
         SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss.SSS");
@@ -67,7 +70,7 @@ public class PortaSaida extends Porta{
 
 
     public void run(){
-        while(true){
+        while(!exit){
             guardarPacote();
         }
     }

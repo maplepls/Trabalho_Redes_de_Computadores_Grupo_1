@@ -11,6 +11,8 @@ public class Porta implements Runnable{
     int t; //tempo de criação ou guardar na fila
     Queue<String> filaPacotes; //fila de pacotes (entrada ou saída)
 
+    public static boolean exit = false;
+
     public Porta(String ID, int size, int p, int t) {
         this.ID = ID;
         this.size  = size;
@@ -28,5 +30,9 @@ public class Porta implements Runnable{
     }
 
     public void run(){}
+
+    public void parar(){
+        exit = true;
+    }
 
 }
