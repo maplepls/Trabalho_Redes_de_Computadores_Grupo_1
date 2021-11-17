@@ -1,4 +1,7 @@
 import java.io.FileWriter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Queue;
 
 public class PortaSaida extends Porta{
 
@@ -7,7 +10,7 @@ public class PortaSaida extends Porta{
     int packageTransmissionDelay;
     int packageFowardProbability;
     int retransmissionProbability;
-    String[] filaSaida;
+    Queue<String> filaSaida;
 
     String pacote;
 
@@ -24,17 +27,44 @@ public class PortaSaida extends Porta{
         this.filaSaida = super.filaPacotes;
 
         this.packageFowardProbability = packageFowardProbability;
+
+        pacote = " ";
     }
 
-    public void retransmission(){} //retransmissionProbability, usar inserirFila
+    public void guardarPacote(){ //Testar a retransmission e simular tempos de armazenamento
+
+        if (pacote.equals(" ")){ //caso não tenha recebido nada do comutador, fica no aguardo.
+            return;
+        }
+
+        int thisRetProb = retransmissionProbability;
+        int p;
+        do {
+            p = 100 - thisRetProb;
+            thisRetProb = thisRetProb/2;
+
+            try {
+                Thread.sleep(packageTransmissionDelay);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+        } while((double) Math.random() < (double) p / 100.00);
+
+        String[] nomeCortado = pacote.split(" ");
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss.SSS");
+        Date date = new Date();
+        inserirFila(nomeCortado[0] + " " + formatter.format(date));
 
 
-    /*public void inserirFila(){ //pacote e dropProbability
+        pacote = " ";
 
     }
 
-    public void removerFila(){ //pacote e depende do comutador
-
-    }*/
+    public void run(){
+        while(true){
+            guardarPacote();
+        }
+    }
 
 }

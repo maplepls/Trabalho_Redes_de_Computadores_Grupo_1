@@ -2,6 +2,8 @@ import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Queue;
+import java.util.Random;
 
 public class PortaEntrada extends Porta{
 
@@ -10,9 +12,7 @@ public class PortaEntrada extends Porta{
     int packageGenerationDelay;
     int currentPackageId;
     int dropProbability;
-    String[] filaEntrada;
-
-    String pacote;
+    Queue<String> filaEntrada;
 
     FileWriter log_pacotes_criado_sucesso;
     FileWriter log_pacotes_descartados;
@@ -30,19 +30,38 @@ public class PortaEntrada extends Porta{
     }
 
     public void criarPacote(){ //currentPackageID, dropProbability e packageGenerationDelay
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss.SSS");
+        Date date = new Date();
+        String pacote = ID + "_" + currentPackageId + " " + formatter.format(date);
+        currentPackageId++;
 
+        if( (double)Math.random() < (double)dropProbability/100.00){ //Teste de drop
+            //bota no log de drop
+            return;
+        }
+
+        //bota no log de criado na fila
+
+        //Se pacote foi criado, testar se fila ta cheia
+        if(filaPacotes.size() >= size){
+            //kill Pacote
+            //sair da funcao
+            return;
+        }
+
+        //bota no log de inseridos na fila
+        inserirFila(pacote);
     }
-
-    /*public void inserirFila(){ //pacote e dropProbability
-
-    }
-
-    public void removerFila(){ //pacote e depende do comutador
-
-    }*/
 
     public void run (){
-
+        while(true) {
+            try {
+                Thread.sleep(packageGenerationDelay);
+                criarPacote();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 
