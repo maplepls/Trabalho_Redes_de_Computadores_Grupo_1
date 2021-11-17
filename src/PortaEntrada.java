@@ -80,10 +80,4 @@ public class PortaEntrada extends Porta{
     }
      */
 
-    /* cod para pegar data e hora atual ja no formato correto
-    SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss.SSS");
-    Date date = new Date();
-    System.out.println(formatter.format(date));
-     */
-
 }
