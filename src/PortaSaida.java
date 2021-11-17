@@ -38,8 +38,18 @@ public class PortaSaida extends Porta{
         }
 
         int thisRetProb = retransmissionProbability;
-        int p;
-        do {
+        int p = 100 - thisRetProb;
+
+        try {
+            Thread.sleep(packageTransmissionDelay);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        while(((double) Math.random() < (double) p / 100.00) && !exit) {
+
+            //bota no log de retransmissao
+
             p = 100 - thisRetProb;
             thisRetProb = thisRetProb/2;
 
@@ -58,7 +68,6 @@ public class PortaSaida extends Porta{
         SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss.SSS");
         Date date = new Date();
         inserirFila(nomeCortado[0] + " " + formatter.format(date));
-
 
         pacote = " ";
 

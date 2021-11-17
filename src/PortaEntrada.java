@@ -14,7 +14,7 @@ public class PortaEntrada extends Porta{
 
     FileWriter log_pacotes_criado_sucesso;
     FileWriter log_pacotes_descartados;
-    FileWriter log_pacotes_na_fila;
+    FileWriter log_pacotes_fila_cheia;
 
     public PortaEntrada(String ID, int size, int dropProbability, int packageGenerationDelay){
         super(ID, size, dropProbability, packageGenerationDelay);
