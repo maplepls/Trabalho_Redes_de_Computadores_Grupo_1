@@ -22,4 +22,4 @@ public class Comutador implements Runnable{
     }
 }
 
-//Semaforo binario???
+//Semaforo binario == mutex???
