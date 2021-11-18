@@ -55,6 +55,15 @@ public class PortaEntrada extends Porta{
 
     }
 
+    public Queue<String> getFilaEntrada(){
+        return filaEntrada;
+    }
+
+    public String getFirstFilaEntrada(){
+        return filaEntrada.poll();
+    }
+
+
     public void run (){
 
         while(!exit) {

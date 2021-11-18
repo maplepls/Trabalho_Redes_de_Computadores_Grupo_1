@@ -1,7 +1,5 @@
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class Porta implements Runnable{
 
@@ -19,6 +17,13 @@ public class Porta implements Runnable{
         this.p = p;
         this.t = t;
         filaPacotes = new LinkedList<String>();
+    }
+
+    public String novoHorarioPacote(String pacote){
+        pacote = pacote.split(" ")[0];
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss.SSS");
+        Date date = new Date();
+        return pacote + " " + formatter.format(date);
     }
 
     public void inserirFila(String idPacote){ //pacote e dropProbability ou retransmissionProbability

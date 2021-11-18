@@ -12,8 +12,6 @@ public class PortaSaida extends Porta{
     int retransmissionProbability;
     Queue<String> filaSaida;
 
-    String pacote;
-
     FileWriter log_pacotes_transmitido_sucesso;
     FileWriter log_pacotes_retransmitidos;
     FileWriter log_pacotes_nao_tratados_saida;
@@ -27,13 +25,13 @@ public class PortaSaida extends Porta{
         this.filaSaida = super.filaPacotes;
 
         this.packageFowardProbability = packageFowardProbability;
-
-        pacote = " ";
     }
 
     public void guardarPacote(){ //Testar a retransmission e simular tempos de armazenamento
 
-        if (pacote.equals(" ")){ //caso não tenha recebido nada do comutador, fica no aguardo.
+        String pacote = filaPacotes.poll();
+
+        if (pacote == null){ //caso não tenha recebido nada do comutador, fica no aguardo.
             return;
         }
 
@@ -71,8 +69,12 @@ public class PortaSaida extends Porta{
 
     }
 
-    public void receivePacote(String pacote){
-        this.pacote = pacote;
+    public boolean filaCheia(){
+        return filaSaida.size() == size;
+    }
+
+    public int getPackageFowardProbability(){
+        return packageFowardProbability;
     }
 
 

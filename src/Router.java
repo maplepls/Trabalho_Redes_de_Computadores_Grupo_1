@@ -16,6 +16,11 @@ public class Router {
     PortaSaida pSaida;
     Comutador comutador;
 
+    ArrayList<PortaEntrada> portasEntrada = new ArrayList<PortaEntrada>();
+    ArrayList<PortaSaida> portasSaida = new ArrayList<PortaSaida>();
+
+    int switchDelayComutador;
+
     public Router(String arg){
         this.nomeArquivo = arg;
     }
@@ -31,6 +36,11 @@ public class Router {
                line = br.readLine();
                lerLinha(line);
            }
+           //CyclicBarrier adasdas = new CyclicBarrier(arrListString.size()+1)
+           //
+           comutador = new Comutador(switchDelayComutador, portasEntrada, portasSaida);
+           thrdComutador = new Thread(comutador);
+
        } catch (IOException e) {
            e.printStackTrace();
        } finally {

@@ -10,10 +10,18 @@ public class Comutador implements Runnable{
     FileWriter log_pacotes_fila_cheia;
     FileWriter log_pacotes_nao_tratados_comutacao;
 
+    ArrayList<PortaEntrada> portasEntrada;
+    ArrayList<PortaSaida> portasSaida;
+
+    String pacote;
+
+
     private static boolean exit = false;
 
-    public Comutador(int switchDelay){
+    public Comutador(int switchDelay, ArrayList<PortaEntrada> portasEntrada, ArrayList<PortaSaida> portasSaida){
         this.switchDelay = switchDelay;
+        this.portasEntrada = portasEntrada;
+        this.portasSaida = portasSaida;
     }
 
     public void run(){
@@ -90,5 +98,3 @@ public class Comutador implements Runnable{
         exit = true;
     }
 }
-
-//Semaforo binario == mutex???
