@@ -55,6 +55,9 @@ public class Router {
         return;
     }
 
+    //Verificar somatorio da PackageFowardProbability se é 100 antes de rodar :D
+
+    //Destrinchar função de ler linha para: ler linha e armazena elas em arrayList e inicia as thrds e fazem elas esperarem pelo total de linhas + 1 o CyclicBarrier
 
     public void lerLinha(String line){
         String[] palavra = line.split(" ");
