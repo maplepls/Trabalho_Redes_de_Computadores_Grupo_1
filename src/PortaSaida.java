@@ -67,9 +67,7 @@ public class PortaSaida extends Porta{
         String[] nomeCortado = pacote.split(" ");
         SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss.SSS");
         Date date = new Date();
-        inserirFila(nomeCortado[0] + " " + formatter.format(date));
-
-        pacote = " ";
+        //inserirFila(nomeCortado[0] + " " + formatter.format(date));
 
     }
 
@@ -79,6 +77,7 @@ public class PortaSaida extends Porta{
 
 
     public void run(){
+
         while(!exit){
             guardarPacote();
         }

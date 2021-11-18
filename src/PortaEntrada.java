@@ -56,6 +56,7 @@ public class PortaEntrada extends Porta{
     }
 
     public void run (){
+
         while(!exit) {
             try {
                 Thread.sleep(packageGenerationDelay);

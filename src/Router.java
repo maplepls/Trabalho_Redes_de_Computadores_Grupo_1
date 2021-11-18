@@ -1,14 +1,16 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Router {
 
     String nomeArquivo;
 
-    ThreadGroup portasEntrada = new ThreadGroup("PortasEntrada");
-    ThreadGroup portasSaida = new ThreadGroup("PortasSaida");
+    ThreadGroup thrdGpPortasEntrada = new ThreadGroup("portasEntrada");
+    ThreadGroup thrdGpPortasSaida = new ThreadGroup("portasSaida");
+    Thread thrdComutador;
 
     PortaEntrada pEntrada;
     PortaSaida pSaida;
@@ -25,6 +27,7 @@ public class Router {
        try {
            String line = br.readLine();
            while (line != null) {
+               //arrListString.add() = br.readLine();
                line = br.readLine();
                lerLinha(line);
            }
@@ -35,6 +38,8 @@ public class Router {
        }
 
        //rodar comutador e portas
+
+       thrdComutador.start();
 
        /*PortaEntrada portaEntrada = new PortaEntrada("A", 5, 10, 2000);
        Thread thrd = new Thread(portaEntrada);
@@ -55,14 +60,22 @@ public class Router {
         String[] palavra = line.split(" ");
 
         if (palavra[0].equals("switch-fabric:")) {
-            comutador = new Comutador(Integer.parseInt(palavra[1]));
+            switchDelayComutador = Integer.parseInt(palavra[1]);
+            //comutador = new Comutador(Integer.parseInt(palavra[1]));
+            //thrdComutador = new Thread(comutador);
         } else if (palavra[0].equals("input:")) {
             pEntrada = new PortaEntrada(palavra[1], Integer.parseInt(palavra[2]), Integer.parseInt(palavra[3]), Integer.parseInt(palavra[4]));
-            Thread thrdEntrada = new Thread(portasEntrada, pEntrada, palavra[1]);
+            Thread thrdEntrada = new Thread(thrdGpPortasEntrada, pEntrada, palavra[1]);
+
+            portasEntrada.add(pEntrada);
+            thrdEntrada.start();
 
         } else if (palavra[0].equals("output:")){
             pSaida = new PortaSaida(palavra[1], Integer.parseInt(palavra[2]), Integer.parseInt(palavra[3]), Integer.parseInt(palavra[4]), Integer.parseInt(palavra[5]));
-            Thread thrdSaida = new Thread(portasSaida, pSaida, palavra[1]);
+            Thread thrdSaida = new Thread(thrdGpPortasSaida, pSaida, palavra[1]);
+
+            portasSaida.add(pSaida);
+            thrdSaida.start();
         }
         else{
             //throw invalidArgsException;
