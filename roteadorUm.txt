@@ -1,0 +1,6 @@
+switch-fabric: 50
+input: A_ 10 100 10
+input: B_ 10 150 15
+output: C_ 20 30 25 20
+output: D_ 20 30 25 20
+output: E_ 25 40 50 30
