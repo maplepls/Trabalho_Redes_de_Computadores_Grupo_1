@@ -1,3 +1,4 @@
+import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.BrokenBarrierException;
 
@@ -8,7 +9,7 @@ public class PortaSaida extends Porta{
     int packageTransmissionDelay;
     int packageFowardProbability;
     int retransmissionProbability;
-    Queue<String> filaSaida;
+    LinkedList<String> filaSaida;
 
     String log_pacotes_transmitido_sucesso;
     String log_pacotes_retransmitidos;
@@ -20,7 +21,7 @@ public class PortaSaida extends Porta{
         this.size = super.size;
         this.retransmissionProbability = super.p;
         this.packageTransmissionDelay = super.t;
-        this.filaSaida = super.filaPacotes;
+        this.filaSaida = new LinkedList<String>();
         this.packageFowardProbability = packageFowardProbability;
 
         log_pacotes_transmitido_sucesso = ID + "log_pacotes_transmitido_sucesso";
@@ -31,9 +32,9 @@ public class PortaSaida extends Porta{
 
     public void transmitirPacote(){ //Testar a retransmission e simular tempos de armazenamento
 
-        String pacote = filaPacotes.poll();
+        String pacote = filaSaida.poll();
 
-        if (pacote == null){ //caso não tenha recebido nada do comutador, fica no aguardo.
+        if (pacote == null || exit){ //caso não tenha recebido nada do comutador, fica no aguardo.
             return;
         }
 
@@ -76,6 +77,8 @@ public class PortaSaida extends Porta{
         return packageFowardProbability;
     }
 
+    public void inserirFila(String pacote) { filaSaida.add(pacote); }
+
     public void run(){
 
         try {
@@ -84,9 +87,16 @@ public class PortaSaida extends Porta{
             e.printStackTrace();
         } catch (BrokenBarrierException e) {
             e.printStackTrace();
+
         }
 
         while(!exit){
+            try {
+                Thread.sleep(packageTransmissionDelay);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
             transmitirPacote();
         }
 
@@ -94,6 +104,7 @@ public class PortaSaida extends Porta{
         while((novoPacote = filaSaida.poll()) != null){
             funcoesComuns.escreveLog(log_pacotes_nao_tratados_saida, novoPacote);
         }
+
         Thread.currentThread().interrupt();
     }
 }

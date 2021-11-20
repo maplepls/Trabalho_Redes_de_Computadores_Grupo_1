@@ -64,9 +64,9 @@ public class Comutador implements Runnable{
                 //resetando para próximo ciclo
                 portaSaidaAtual = null;
                 portaEntradaAtual = null;
-                pacote = " ";
-                i = (i + 1) % portasEntrada.size(); //iterando próxima porta
+                pacote = null;
             }
+            i = (i + 1) % portasEntrada.size(); //iterando próxima porta
         }
 
         for (i = 0; i < portasEntrada.size(); i++){
@@ -75,8 +75,8 @@ public class Comutador implements Runnable{
                 funcoesComuns.escreveLog(log_pacotes_nao_tratados_comutacao, novoPacote);
             }
         }
-        Thread.currentThread().interrupt();
 
+        Thread.currentThread().interrupt();
     }
 
     public PortaSaida escolherPortaSaida(){

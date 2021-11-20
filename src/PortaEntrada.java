@@ -1,3 +1,4 @@
+import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.BrokenBarrierException;
 
@@ -8,7 +9,7 @@ public class PortaEntrada extends Porta{
     int packageGenerationDelay;
     int currentPackageId;
     int dropProbability;
-    Queue<String> filaEntrada;
+    LinkedList<String> filaEntrada;
 
     String log_pacotes_criado_sucesso;
     String log_pacotes_descartados;
@@ -20,7 +21,7 @@ public class PortaEntrada extends Porta{
         this.size = super.size;
         this.dropProbability = super.p;
         this.packageGenerationDelay = super.t;
-        this.filaEntrada = super.filaPacotes;
+        this.filaEntrada = new LinkedList<String>();
 
         this.currentPackageId = 1;
 
@@ -41,7 +42,7 @@ public class PortaEntrada extends Porta{
         funcoesComuns.escreveLog(log_pacotes_criado_sucesso, pacote);
 
         //Se pacote foi criado, testar se fila ta cheia
-        if(filaPacotes.size() >= size && !exit){
+        if(filaEntrada.size() >= size && !exit){
             funcoesComuns.escreveLog(log_pacotes_fila_cheia, funcoesComuns.novoHorarioPacote(pacote));
             return;
         }
@@ -49,8 +50,10 @@ public class PortaEntrada extends Porta{
         if(!exit){
             inserirFila(pacote);
         }
-
+        return;
     }
+
+    public void inserirFila(String pacote) { filaEntrada.add(pacote); }
 
     public Queue<String> getFilaEntrada(){
         return filaEntrada;
@@ -74,15 +77,14 @@ public class PortaEntrada extends Porta{
         while (!exit) {
             try {
                 Thread.sleep(packageGenerationDelay);
-                if (!exit) {
-                    criarPacote();
-                    //System.out.println("oi da Porta de entrada " + ID);
-                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        }
 
+            if (!exit) {
+                criarPacote();
+            }
+        }
         Thread.currentThread().interrupt();
     }
 }

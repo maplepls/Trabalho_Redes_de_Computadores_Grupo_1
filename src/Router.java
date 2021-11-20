@@ -67,8 +67,8 @@ public class Router {
     }
 
     public void pararRoteador(){
-        Porta.exit = true;
         Comutador.exit = true;
+        Porta.exit = true;
         return;
     }
 
