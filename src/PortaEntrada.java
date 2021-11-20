@@ -3,7 +3,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Queue;
 import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.CyclicBarrier;
 
 public class PortaEntrada extends Porta{
 
@@ -12,16 +11,14 @@ public class PortaEntrada extends Porta{
     int packageGenerationDelay;
     int currentPackageId;
     int dropProbability;
-    CyclicBarrier barreira;
     Queue<String> filaEntrada;
 
     FileWriter log_pacotes_criado_sucesso;
     FileWriter log_pacotes_descartados;
     FileWriter log_pacotes_fila_cheia;
 
-    public PortaEntrada(String ID, int size, int dropProbability, int packageGenerationDelay, CyclicBarrier barreira){
-        super(ID, size, dropProbability, packageGenerationDelay, barreira);
-        this.barreira = super.barreira;
+    public PortaEntrada(String ID, int size, int packageGenerationDelay, int dropProbability){
+        super(ID, size, packageGenerationDelay, dropProbability);
         this.ID = super.ID;
         this.size = super.size;
         this.dropProbability = super.p;
@@ -29,12 +26,14 @@ public class PortaEntrada extends Porta{
         this.filaEntrada = super.filaPacotes;
 
         this.currentPackageId = 1;
+
+        log_pacotes_criado_sucesso = ID + "log_pacotes_criado_sucesso";
+        log_pacotes_descartados = ID + "log_pacotes_descartados";
+        log_pacotes_fila_cheia = ID + "log_pacotes_fila_cheia";
     }
 
     public void criarPacote(){ //currentPackageID, dropProbability e packageGenerationDelay
-        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss.SSS");
-        Date date = new Date();
-        String pacote = ID + "_" + currentPackageId + " " + formatter.format(date);
+        String pacote = funcoesComuns.novoHorarioPacote(ID + String.valueOf(currentPackageId));
         currentPackageId++;
 
         if( (double)Math.random() < (double)dropProbability/100.00 && !exit){ //Teste de drop
@@ -68,9 +67,10 @@ public class PortaEntrada extends Porta{
     }
 
 
-    public void run (){
+    public void run () {
+
         try {
-            barreira.await();
+            Router.barreira.await();
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (BrokenBarrierException e) {
@@ -82,29 +82,13 @@ public class PortaEntrada extends Porta{
                 Thread.sleep(packageGenerationDelay);
                 if(!exit){
                     criarPacote();
-                    System.out.println("oi da Porta de entrada " + ID);
+                    //System.out.println("oi da Porta de entrada " + ID);
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-        System.out.println("Aaaaaa a porta de entrada " + ID + " morreuu naooo aaaaaa pepposad :(");
+
+        Thread.currentThread().interrupt();
     }
-
-
-    /* cod pra criar file e append
-    try (FileWriter f = new FileWriter("filename_Letra.txt", true);
-
-        PrintWriter p = new PrintWriter(f);) {
-        p.println("append")
-
-    } catch (IOException i) {
-        i.printStackTrace();
-    }
-
-    } else  {
-        throw error;
-    }
-     */
-
 }

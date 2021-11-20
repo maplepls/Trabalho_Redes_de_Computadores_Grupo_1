@@ -1,6 +1,5 @@
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.CyclicBarrier;
 
 public class Porta implements Runnable{
 
@@ -13,8 +12,7 @@ public class Porta implements Runnable{
 
     public static boolean exit = false;
 
-    public Porta(String ID, int size, int p, int t, CyclicBarrier barreira) {
-        this.barreira = barreira;
+    public Porta(String ID, int size, int t, int p) {
         this.ID = ID;
         this.size  = size;
         this.p = p;

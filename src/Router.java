@@ -1,9 +1,13 @@
+import Exceptions.invalidArgException;
+import Exceptions.invalidPackageFowardSum;
+
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Scanner;
-import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.CyclicBarrier;;
 
 public class Router {
 
@@ -31,34 +35,28 @@ public class Router {
         this.nomeArquivo = arg;
     }
 
-    public void rodarRoteador() throws IOException {
+    public void rodarRoteador() throws IOException, invalidArgException, invalidPackageFowardSum {
 
        String caminhoArquivo = nomeArquivo;
        BufferedReader br = new BufferedReader(new FileReader(caminhoArquivo));
        try {
+
            String line = br.readLine();
            while (line != null) {
-               linhasBNF.add(br.readLine());
+               linhasBNF.add(line);
                contadorLinhasBNF++;
-           }
-           //CyclicBarrier adasdas = new CyclicBarrier(arrListString.size()+1)
-           //
-           comutador = new Comutador(switchDelayComutador, portasEntrada, portasSaida, barreira);
-           thrdComutador = new Thread(comutador);
+               line = br.readLine();
 
+           }
        } catch (IOException e) {
            e.printStackTrace();
        } finally {
            br.close();
        }
 
-       //rodar comutador e portas
-
-       thrdComutador.start();
-
-       /*PortaEntrada portaEntrada = new PortaEntrada("A", 5, 10, 2000);
-       Thread thrd = new Thread(portaEntrada);
-       thrd.start();*/  //Teste
+        comutador = new Comutador(switchDelayComutador, portasEntrada, portasSaida);
+        thrdComutador = new Thread(comutador);
+        thrdComutador.start();
 
        System.out.println("Pressionar qualquer tecla para encerrar programa");
        System.in.read();
@@ -67,13 +65,17 @@ public class Router {
     }
 
     public void pararRoteador(){
+        Porta.exit = true;
+        Comutador.exit = true;
         return;
     }
 
     //Verificar somatorio da PackageFowardProbability se é 100 antes de rodar :D
 
-    public void inicializarThreads(){
-        barreira = new CyclicBarrier(linhasBNF.size() + 1);
+    public void inicializarThreads() throws invalidArgException, invalidPackageFowardSum {
+        barreira = new CyclicBarrier(linhasBNF.size()
+        );
+        int somaProbsFoward = 0;
 
         //Ainda falta colocar os gate.await() nas threads filhas...
 
@@ -83,10 +85,8 @@ public class Router {
 
             if (palavra[0].equals("switch-fabric:")) {
                 switchDelayComutador = Integer.parseInt(palavra[1]);
-                //comutador = new Comutador(Integer.parseInt(palavra[1]));
-                //thrdComutador = new Thread(comutador);
             } else if (palavra[0].equals("input:")) {
-                pEntrada = new PortaEntrada(palavra[1], Integer.parseInt(palavra[2]), Integer.parseInt(palavra[3]), Integer.parseInt(palavra[4]), barreira);
+                pEntrada = new PortaEntrada(palavra[1], Integer.parseInt(palavra[2]), Integer.parseInt(palavra[3]), Integer.parseInt(palavra[4]));
                 Thread thrdEntrada = new Thread(thrdGpPortasEntrada, pEntrada, palavra[1]);
 
                 portasEntrada.add(pEntrada);
@@ -98,10 +98,24 @@ public class Router {
 
                 portasSaida.add(pSaida);
                 thrdSaida.start();
+
+                somaProbsFoward += Integer.parseInt(palavra[3]);
+                if(somaProbsFoward > 100 ){
+                    throw new invalidPackageFowardSum(String.valueOf(somaProbsFoward));
+                }
+
             }
             else{
-                //throw invalidArgsException;
+                throw new invalidArgException(palavra[0]);
             }
         }
+
+        //Verifica se ficou menor que 100 as probs
+        if(somaProbsFoward < 100){
+            throw new invalidPackageFowardSum(String.valueOf(somaProbsFoward));
+        }
+
     }
 }
+
+

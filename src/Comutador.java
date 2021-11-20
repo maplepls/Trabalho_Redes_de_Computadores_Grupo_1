@@ -3,7 +3,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.CyclicBarrier;
 
 public class Comutador implements Runnable{
     int switchDelay;
@@ -15,23 +14,21 @@ public class Comutador implements Runnable{
     ArrayList<PortaEntrada> portasEntrada;
     ArrayList<PortaSaida> portasSaida;
 
-    CyclicBarrier barreira;
-
     String pacote;
 
 
     private static boolean exit = false;
 
-    public Comutador(int switchDelay, ArrayList<PortaEntrada> portasEntrada, ArrayList<PortaSaida> portasSaida, CyclicBarrier barreira){
-        this.barreira = barreira;
+    public Comutador(int switchDelay, ArrayList<PortaEntrada> portasEntrada, ArrayList<PortaSaida> portasSaida){
         this.switchDelay = switchDelay;
         this.portasEntrada = portasEntrada;
         this.portasSaida = portasSaida;
     }
 
     public void run(){
+
         try {
-            barreira.await();
+            Router.barreira.await();
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (BrokenBarrierException e) {
@@ -53,12 +50,21 @@ public class Comutador implements Runnable{
                     e.printStackTrace();
                 }
 
-                //ajeitar pelo package_foward_probability
-                PortaSaida portaEscolhida = escolherPortaSaida();
+                //escolhe porta saida com packageFowardProbability
+                portaSaidaAtual = escolherPortaSaida();
+                if(!exit){
+                    portaSaidaAtual = escolherPortaSaida();
+                    if(!portaSaidaAtual.filaCheia()){
+                        portaSaidaAtual.inserirFila(pacote);
+                        funcoesComuns.escreveLog(log_pacotes_encaminhado_sucesso, funcoesComuns.novoHorarioPacote(pacote));
+                    }else{
+                        funcoesComuns.escreveLog(log_pacotes_fila_cheia, funcoesComuns.novoHorarioPacote(pacote));
+                    }
+                }else{
+                    funcoesComuns.escreveLog(log_pacotes_nao_tratados_comutacao, funcoesComuns.novoHorarioPacote(pacote));
+                }
 
-                //mudar horário
-                //log pacote encaminhados sucesso
-
+                //resetando para próximo ciclo
                 portaSaidaAtual = null;
                 portaEntradaAtual = null;
                 pacote = " ";
@@ -66,13 +72,20 @@ public class Comutador implements Runnable{
 
             i = (i + 1) % portasEntrada.size();
         }
-        //getFilaEntrada para as portas de entrada
-        //logs de fila de entrada
+
+        for (i = 0; i < portasEntrada.size(); i++){
+            String novoPacote;
+            while((novoPacote = portasEntrada.get(i).getFilaEntrada().poll()) != null){
+                funcoesComuns.escreveLog(log_pacotes_nao_tratados_comutacao, novoPacote);
+            }
+        }
+        Thread.currentThread().interrupt();
+
     }
 
     public PortaSaida escolherPortaSaida(){
         int[] probs = new int[portasSaida.size()];
-        double chutePortaSaida = (double) Math.random()*100;
+        double chutePortaSaida = (double) Math.random() * 100;
         PortaSaida portaEscolhida = null;
 
         for(int i = 0;i < portasSaida.size(); i++){
@@ -87,27 +100,13 @@ public class Comutador implements Runnable{
                 if (chutePortaSaida <= probs[i]) {
                     portaEscolhida = portasSaida.get(i);
                 }
-            }else if(i == portasSaida.size() - 1){
-                    portaEscolhida = portasSaida.get(i);
             }else{
-                if(chutePortaSaida <= probs[i] && chutePortaSaida >= probs[i+1]){
+                if(chutePortaSaida <= probs[i] && chutePortaSaida >= probs[i-1]){
                     portaEscolhida = portasSaida.get(i);
                 }
             }
         }
 
         return portaEscolhida;
-    }
-
-    public String novoHorarioPacote(String pacote){
-        pacote = pacote.split(" ")[0];
-        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss.SSS");
-        Date date = new Date();
-        return pacote + " " + formatter.format(date);
-    }
-
-
-    public void parar(){
-        exit = true;
     }
 }

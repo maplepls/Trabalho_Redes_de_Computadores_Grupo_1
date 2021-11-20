@@ -3,7 +3,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Queue;
 import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.CyclicBarrier;
 
 public class PortaSaida extends Porta{
 
@@ -31,7 +30,7 @@ public class PortaSaida extends Porta{
         this.packageFowardProbability = packageFowardProbability;
     }
 
-    public void guardarPacote(){ //Testar a retransmission e simular tempos de armazenamento
+    public void transmitirPacote(){ //Testar a retransmission e simular tempos de armazenamento
 
         String pacote = filaPacotes.poll();
 
@@ -40,7 +39,7 @@ public class PortaSaida extends Porta{
         }
 
         int thisRetProb = retransmissionProbability;
-        int p = 100 - thisRetProb;
+        int p = 100 - thisRetProb; //probabilidade de TRANSMITIR
 
         try {
             Thread.sleep(packageTransmissionDelay);
@@ -48,7 +47,7 @@ public class PortaSaida extends Porta{
             e.printStackTrace();
         }
 
-        while(((double) Math.random() < (double) p / 100.00) && !exit) {
+        while(((double) Math.random() > (double) p / 100.00) && !exit) {
 
             //bota no log de retransmissao
 
@@ -66,11 +65,6 @@ public class PortaSaida extends Porta{
             //bota no log de pacotes inseridos com sucesso
         }
 
-        String[] nomeCortado = pacote.split(" ");
-        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss.SSS");
-        Date date = new Date();
-        //inserirFila(nomeCortado[0] + " " + formatter.format(date));
-
     }
 
     public boolean filaCheia(){
@@ -83,6 +77,7 @@ public class PortaSaida extends Porta{
 
 
     public void run(){
+
         try {
             barreira.await();
         } catch (InterruptedException e) {
@@ -92,8 +87,14 @@ public class PortaSaida extends Porta{
         }
 
         while(!exit){
-            guardarPacote();
+            transmitirPacote();
         }
+
+        String novoPacote;
+        while((novoPacote = filaSaida.poll()) != null){
+            funcoesComuns.escreveLog(log_pacotes_nao_tratados_saida, novoPacote);
+        }
+        Thread.currentThread().interrupt();
     }
 
 }
