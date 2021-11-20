@@ -32,6 +32,7 @@ public class PortaSaida extends Porta{
         if (pacote == null || exit){ //caso não tenha recebido nada do comutador, fica no aguardo.
             return;
         }
+        pacote = funcoesComuns.novoHorarioPacote(pacote);
 
         int thisRetProb = retransmissionProbability;
         int p = 100 - thisRetProb; //probabilidade de TRANSMITIR

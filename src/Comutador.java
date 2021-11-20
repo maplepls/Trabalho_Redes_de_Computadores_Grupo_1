@@ -41,7 +41,7 @@ public class Comutador implements Runnable{
             portaEntradaAtual = portasEntrada.get(i);
             pacote = portaEntradaAtual.getFirstFilaEntrada();
             if(pacote != null){
-
+                pacote = funcoesComuns.novoHorarioPacote(pacote);
                 try {
                     Thread.sleep(switchDelay);
                 } catch (InterruptedException e) {
