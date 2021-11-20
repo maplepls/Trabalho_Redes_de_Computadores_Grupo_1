@@ -34,18 +34,15 @@ public class PortaEntrada extends Porta{
         currentPackageId++;
 
         if( (double)Math.random() < (double)dropProbability/100.00 && !exit){ //Teste de drop
-            //bota no log de drop
+            funcoesComuns.escreveLog(log_pacotes_descartados, pacote);
             return;
         }
 
-        if(!exit){
-            //bota no log de criado
-        }
+        funcoesComuns.escreveLog(log_pacotes_criado_sucesso, pacote);
 
         //Se pacote foi criado, testar se fila ta cheia
         if(filaPacotes.size() >= size && !exit){
-            //kill Pacote
-            //bota no log de descartados pq fila tava cheia
+            funcoesComuns.escreveLog(log_pacotes_fila_cheia, funcoesComuns.novoHorarioPacote(pacote));
             return;
         }
 
@@ -74,10 +71,10 @@ public class PortaEntrada extends Porta{
             e.printStackTrace();
         }
 
-        while(!exit) {
+        while (!exit) {
             try {
                 Thread.sleep(packageGenerationDelay);
-                if(!exit){
+                if (!exit) {
                     criarPacote();
                     //System.out.println("oi da Porta de entrada " + ID);
                 }

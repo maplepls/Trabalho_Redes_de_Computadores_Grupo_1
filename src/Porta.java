@@ -8,7 +8,7 @@ public class Porta implements Runnable{
     int t; //tempo de criação ou guardar na fila
     Queue<String> filaPacotes; //fila de pacotes (entrada ou saída)
 
-    public static boolean exit = false;
+    public static boolean exit;
 
     public Porta(String ID, int size, int t, int p) {
         this.ID = ID;
@@ -16,13 +16,7 @@ public class Porta implements Runnable{
         this.p = p;
         this.t = t;
         filaPacotes = new LinkedList<String>();
-    }
-
-    public String novoHorarioPacote(String pacote){
-        pacote = pacote.split(" ")[0];
-        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss.SSS");
-        Date date = new Date();
-        return pacote + " " + formatter.format(date);
+        this.exit = false;
     }
 
     public void inserirFila(String idPacote){ //pacote e dropProbability ou retransmissionProbability
@@ -33,10 +27,6 @@ public class Porta implements Runnable{
         filaPacotes.poll();
     }
 
-    public void run(){}
-
-    public void parar(){
-        exit = true;
-    }
+    public void run(){};
 
 }

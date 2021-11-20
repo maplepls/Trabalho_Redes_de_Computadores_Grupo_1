@@ -21,8 +21,12 @@ public class PortaSaida extends Porta{
         this.retransmissionProbability = super.p;
         this.packageTransmissionDelay = super.t;
         this.filaSaida = super.filaPacotes;
-
         this.packageFowardProbability = packageFowardProbability;
+
+        log_pacotes_transmitido_sucesso = ID + "log_pacotes_transmitido_sucesso";
+        log_pacotes_retransmitidos  = ID + "log_pacotes_retransmitidos";
+        log_pacotes_nao_tratados_saida = ID + "log_pacotes_nao_tratados_saida";
+
     }
 
     public void transmitirPacote(){ //Testar a retransmission e simular tempos de armazenamento
@@ -44,10 +48,10 @@ public class PortaSaida extends Porta{
 
         while(((double) Math.random() > (double) p / 100.00) && !exit) {
 
-            //bota no log de retransmissao
+            funcoesComuns.escreveLog(log_pacotes_retransmitidos, funcoesComuns.novoHorarioPacote(pacote));
 
-            p = 100 - thisRetProb;
             thisRetProb = thisRetProb/2;
+            p = 100 - thisRetProb;
 
             try {
                 Thread.sleep(packageTransmissionDelay);
@@ -57,7 +61,9 @@ public class PortaSaida extends Porta{
         }
 
         if(!exit){
-            //bota no log de pacotes inseridos com sucesso
+            funcoesComuns.escreveLog(log_pacotes_transmitido_sucesso, funcoesComuns.novoHorarioPacote(pacote));
+        } else{
+            funcoesComuns.escreveLog(log_pacotes_nao_tratados_saida, funcoesComuns.novoHorarioPacote(pacote));
         }
 
     }
@@ -69,7 +75,6 @@ public class PortaSaida extends Porta{
     public int getPackageFowardProbability(){
         return packageFowardProbability;
     }
-
 
     public void run(){
 
@@ -91,5 +96,4 @@ public class PortaSaida extends Porta{
         }
         Thread.currentThread().interrupt();
     }
-
 }

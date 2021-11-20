@@ -13,12 +13,13 @@ public class Comutador implements Runnable{
 
     String pacote;
 
-    private static boolean exit = false;
+    public static boolean exit;
 
     public Comutador(int switchDelay, ArrayList<PortaEntrada> portasEntrada, ArrayList<PortaSaida> portasSaida){
         this.switchDelay = switchDelay;
         this.portasEntrada = portasEntrada;
         this.portasSaida = portasSaida;
+        this.exit = false;
     }
 
     public void run(){
@@ -38,7 +39,7 @@ public class Comutador implements Runnable{
         while(!exit){
             portaEntradaAtual = portasEntrada.get(i);
             pacote = portaEntradaAtual.getFirstFilaEntrada();
-            if(pacote != null && !exit){
+            if(pacote != null){
 
                 try {
                     Thread.sleep(switchDelay);
@@ -64,9 +65,8 @@ public class Comutador implements Runnable{
                 portaSaidaAtual = null;
                 portaEntradaAtual = null;
                 pacote = " ";
+                i = (i + 1) % portasEntrada.size(); //iterando próxima porta
             }
-
-            i = (i + 1) % portasEntrada.size();
         }
 
         for (i = 0; i < portasEntrada.size(); i++){
@@ -102,7 +102,6 @@ public class Comutador implements Runnable{
                 }
             }
         }
-
         return portaEscolhida;
     }
 }

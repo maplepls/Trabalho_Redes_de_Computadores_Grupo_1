@@ -62,8 +62,8 @@ public class Router {
 
        System.out.println("Pressionar qualquer tecla para encerrar programa");
        System.in.read();
-
-       //portaEntrada.parar();
+       pararRoteador();
+       return;
     }
 
     public void pararRoteador(){
