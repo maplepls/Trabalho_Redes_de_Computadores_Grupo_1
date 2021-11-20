@@ -3,6 +3,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.concurrent.CyclicBarrier;
 
 public class Router {
 
@@ -19,6 +20,11 @@ public class Router {
     ArrayList<PortaEntrada> portasEntrada = new ArrayList<PortaEntrada>();
     ArrayList<PortaSaida> portasSaida = new ArrayList<PortaSaida>();
 
+    ArrayList<String> linhasBNF = new ArrayList<String>();
+    int contadorLinhasBNF = 0;
+
+    public static CyclicBarrier barreira;
+
     int switchDelayComutador;
 
     public Router(String arg){
@@ -32,13 +38,12 @@ public class Router {
        try {
            String line = br.readLine();
            while (line != null) {
-               //arrListString.add() = br.readLine();
-               line = br.readLine();
-               lerLinha(line);
+               linhasBNF.add(br.readLine());
+               contadorLinhasBNF++;
            }
            //CyclicBarrier adasdas = new CyclicBarrier(arrListString.size()+1)
            //
-           comutador = new Comutador(switchDelayComutador, portasEntrada, portasSaida);
+           comutador = new Comutador(switchDelayComutador, portasEntrada, portasSaida, barreira);
            thrdComutador = new Thread(comutador);
 
        } catch (IOException e) {
@@ -67,33 +72,36 @@ public class Router {
 
     //Verificar somatorio da PackageFowardProbability se é 100 antes de rodar :D
 
-    //Destrinchar função de ler linha para: ler linha e armazena elas em arrayList e inicia as thrds e fazem elas esperarem pelo total de linhas + 1 o CyclicBarrier
+    public void inicializarThreads(){
+        barreira = new CyclicBarrier(linhasBNF.size() + 1);
 
-    public void lerLinha(String line){
-        String[] palavra = line.split(" ");
+        //Ainda falta colocar os gate.await() nas threads filhas...
 
-        if (palavra[0].equals("switch-fabric:")) {
-            switchDelayComutador = Integer.parseInt(palavra[1]);
-            //comutador = new Comutador(Integer.parseInt(palavra[1]));
-            //thrdComutador = new Thread(comutador);
-        } else if (palavra[0].equals("input:")) {
-            pEntrada = new PortaEntrada(palavra[1], Integer.parseInt(palavra[2]), Integer.parseInt(palavra[3]), Integer.parseInt(palavra[4]));
-            Thread thrdEntrada = new Thread(thrdGpPortasEntrada, pEntrada, palavra[1]);
+        for(int i = 0; i < linhasBNF.size(); i++){
+            String line = linhasBNF.get(i);
+            String[] palavra = line.split(" ");
 
-            portasEntrada.add(pEntrada);
-            thrdEntrada.start();
+            if (palavra[0].equals("switch-fabric:")) {
+                switchDelayComutador = Integer.parseInt(palavra[1]);
+                //comutador = new Comutador(Integer.parseInt(palavra[1]));
+                //thrdComutador = new Thread(comutador);
+            } else if (palavra[0].equals("input:")) {
+                pEntrada = new PortaEntrada(palavra[1], Integer.parseInt(palavra[2]), Integer.parseInt(palavra[3]), Integer.parseInt(palavra[4]), barreira);
+                Thread thrdEntrada = new Thread(thrdGpPortasEntrada, pEntrada, palavra[1]);
 
-        } else if (palavra[0].equals("output:")){
-            pSaida = new PortaSaida(palavra[1], Integer.parseInt(palavra[2]), Integer.parseInt(palavra[3]), Integer.parseInt(palavra[4]), Integer.parseInt(palavra[5]));
-            Thread thrdSaida = new Thread(thrdGpPortasSaida, pSaida, palavra[1]);
+                portasEntrada.add(pEntrada);
+                thrdEntrada.start();
 
-            portasSaida.add(pSaida);
-            thrdSaida.start();
+            } else if (palavra[0].equals("output:")){
+                pSaida = new PortaSaida(palavra[1], Integer.parseInt(palavra[2]), Integer.parseInt(palavra[3]), Integer.parseInt(palavra[4]), Integer.parseInt(palavra[5]), barreira);
+                Thread thrdSaida = new Thread(thrdGpPortasSaida, pSaida, palavra[1]);
+
+                portasSaida.add(pSaida);
+                thrdSaida.start();
+            }
+            else{
+                //throw invalidArgsException;
+            }
         }
-        else{
-            //throw invalidArgsException;
-        }
-
     }
-
 }

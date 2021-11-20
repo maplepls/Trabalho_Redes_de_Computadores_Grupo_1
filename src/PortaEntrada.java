@@ -2,6 +2,8 @@ import java.io.FileWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Queue;
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CyclicBarrier;
 
 public class PortaEntrada extends Porta{
 
@@ -10,14 +12,16 @@ public class PortaEntrada extends Porta{
     int packageGenerationDelay;
     int currentPackageId;
     int dropProbability;
+    CyclicBarrier barreira;
     Queue<String> filaEntrada;
 
     FileWriter log_pacotes_criado_sucesso;
     FileWriter log_pacotes_descartados;
     FileWriter log_pacotes_fila_cheia;
 
-    public PortaEntrada(String ID, int size, int dropProbability, int packageGenerationDelay){
-        super(ID, size, dropProbability, packageGenerationDelay);
+    public PortaEntrada(String ID, int size, int dropProbability, int packageGenerationDelay, CyclicBarrier barreira){
+        super(ID, size, dropProbability, packageGenerationDelay, barreira);
+        this.barreira = super.barreira;
         this.ID = super.ID;
         this.size = super.size;
         this.dropProbability = super.p;
@@ -65,6 +69,13 @@ public class PortaEntrada extends Porta{
 
 
     public void run (){
+        try {
+            barreira.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (BrokenBarrierException e) {
+            e.printStackTrace();
+        }
 
         while(!exit) {
             try {

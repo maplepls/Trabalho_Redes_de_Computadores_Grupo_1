@@ -1,5 +1,6 @@
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.CyclicBarrier;
 
 public class Porta implements Runnable{
 
@@ -8,10 +9,12 @@ public class Porta implements Runnable{
     int p; //probabilidade de drop do pacote ou de escolha de porta de saída
     int t; //tempo de criação ou guardar na fila
     Queue<String> filaPacotes; //fila de pacotes (entrada ou saída)
+    CyclicBarrier barreira;
 
     public static boolean exit = false;
 
-    public Porta(String ID, int size, int p, int t) {
+    public Porta(String ID, int size, int p, int t, CyclicBarrier barreira) {
+        this.barreira = barreira;
         this.ID = ID;
         this.size  = size;
         this.p = p;

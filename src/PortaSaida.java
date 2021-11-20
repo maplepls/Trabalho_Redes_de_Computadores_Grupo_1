@@ -2,6 +2,8 @@ import java.io.FileWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Queue;
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CyclicBarrier;
 
 public class PortaSaida extends Porta{
 
@@ -10,14 +12,16 @@ public class PortaSaida extends Porta{
     int packageTransmissionDelay;
     int packageFowardProbability;
     int retransmissionProbability;
+    CyclicBarrier barreira;
     Queue<String> filaSaida;
 
     FileWriter log_pacotes_transmitido_sucesso;
     FileWriter log_pacotes_retransmitidos;
     FileWriter log_pacotes_nao_tratados_saida;
 
-    public PortaSaida(String ID, int size, int retransmissionProbability, int packageTransmissionDelay, int packageFowardProbability){
-        super(ID, size, retransmissionProbability, packageTransmissionDelay);
+    public PortaSaida(String ID, int size, int retransmissionProbability, int packageTransmissionDelay, int packageFowardProbability, CyclicBarrier barreira){
+        super(ID, size, retransmissionProbability, packageTransmissionDelay, barreira);
+        this.barreira = super.barreira;
         this.ID = super.ID;
         this.size = super.size;
         this.retransmissionProbability = super.p;
@@ -79,6 +83,13 @@ public class PortaSaida extends Porta{
 
 
     public void run(){
+        try {
+            barreira.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (BrokenBarrierException e) {
+            e.printStackTrace();
+        }
 
         while(!exit){
             guardarPacote();

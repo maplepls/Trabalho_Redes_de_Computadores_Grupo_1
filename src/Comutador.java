@@ -2,6 +2,8 @@ import java.io.FileWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CyclicBarrier;
 
 public class Comutador implements Runnable{
     int switchDelay;
@@ -13,18 +15,29 @@ public class Comutador implements Runnable{
     ArrayList<PortaEntrada> portasEntrada;
     ArrayList<PortaSaida> portasSaida;
 
+    CyclicBarrier barreira;
+
     String pacote;
 
 
     private static boolean exit = false;
 
-    public Comutador(int switchDelay, ArrayList<PortaEntrada> portasEntrada, ArrayList<PortaSaida> portasSaida){
+    public Comutador(int switchDelay, ArrayList<PortaEntrada> portasEntrada, ArrayList<PortaSaida> portasSaida, CyclicBarrier barreira){
+        this.barreira = barreira;
         this.switchDelay = switchDelay;
         this.portasEntrada = portasEntrada;
         this.portasSaida = portasSaida;
     }
 
     public void run(){
+        try {
+            barreira.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (BrokenBarrierException e) {
+            e.printStackTrace();
+        }
+
         int i = 0;
         PortaEntrada portaEntradaAtual;
         PortaSaida portaSaidaAtual;
