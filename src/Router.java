@@ -60,7 +60,7 @@ public class Router {
         thrdComutador = new Thread(comutador);
         thrdComutador.start();
 
-       System.out.println("Pressionar qualquer tecla para encerrar programa");
+       System.out.println("Pressionar enter para encerrar programa");
        System.in.read();
        pararRoteador();
        return;

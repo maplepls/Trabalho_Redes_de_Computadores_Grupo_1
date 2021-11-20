@@ -1,5 +1,4 @@
 import java.util.LinkedList;
-import java.util.Queue;
 import java.util.concurrent.BrokenBarrierException;
 
 public class PortaSaida extends Porta{
