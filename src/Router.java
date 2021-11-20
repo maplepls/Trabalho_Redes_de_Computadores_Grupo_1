@@ -54,6 +54,8 @@ public class Router {
            br.close();
        }
 
+       inicializarThreads();
+
         comutador = new Comutador(switchDelayComutador, portasEntrada, portasSaida);
         thrdComutador = new Thread(comutador);
         thrdComutador.start();
@@ -93,7 +95,7 @@ public class Router {
                 thrdEntrada.start();
 
             } else if (palavra[0].equals("output:")){
-                pSaida = new PortaSaida(palavra[1], Integer.parseInt(palavra[2]), Integer.parseInt(palavra[3]), Integer.parseInt(palavra[4]), Integer.parseInt(palavra[5]), barreira);
+                pSaida = new PortaSaida(palavra[1], Integer.parseInt(palavra[2]), Integer.parseInt(palavra[3]), Integer.parseInt(palavra[4]), Integer.parseInt(palavra[5]));
                 Thread thrdSaida = new Thread(thrdGpPortasSaida, pSaida, palavra[1]);
 
                 portasSaida.add(pSaida);

@@ -1,21 +1,17 @@
-import java.io.FileWriter;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.concurrent.BrokenBarrierException;
 
 public class Comutador implements Runnable{
     int switchDelay;
 
-    FileWriter log_pacotes_encaminhado_sucesso;
-    FileWriter log_pacotes_fila_cheia;
-    FileWriter log_pacotes_nao_tratados_comutacao;
+    String log_pacotes_encaminhado_sucesso = "log_pacotes_encaminhado_sucesso";
+    String log_pacotes_fila_cheia = "log_pacotes_encaminhado_sucesso";
+    String log_pacotes_nao_tratados_comutacao = "log_pacotes_nao_tratados_comutacao";
 
     ArrayList<PortaEntrada> portasEntrada;
     ArrayList<PortaSaida> portasSaida;
 
     String pacote;
-
 
     private static boolean exit = false;
 

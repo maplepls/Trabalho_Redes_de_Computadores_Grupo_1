@@ -1,6 +1,3 @@
-import java.io.FileWriter;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Queue;
 import java.util.concurrent.BrokenBarrierException;
 
@@ -13,9 +10,9 @@ public class PortaEntrada extends Porta{
     int dropProbability;
     Queue<String> filaEntrada;
 
-    FileWriter log_pacotes_criado_sucesso;
-    FileWriter log_pacotes_descartados;
-    FileWriter log_pacotes_fila_cheia;
+    String log_pacotes_criado_sucesso;
+    String log_pacotes_descartados;
+    String log_pacotes_fila_cheia;
 
     public PortaEntrada(String ID, int size, int packageGenerationDelay, int dropProbability){
         super(ID, size, packageGenerationDelay, dropProbability);
