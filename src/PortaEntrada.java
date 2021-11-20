@@ -1,3 +1,4 @@
+import java.io.File;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.BrokenBarrierException;
@@ -11,9 +12,9 @@ public class PortaEntrada extends Porta{
     int dropProbability;
     LinkedList<String> filaEntrada;
 
-    String log_pacotes_criado_sucesso;
-    String log_pacotes_descartados;
-    String log_pacotes_fila_cheia;
+    File log_pacotes_criado_sucesso;
+    File log_pacotes_descartados;
+    File log_pacotes_fila_cheia;
 
     public PortaEntrada(String ID, int size, int packageGenerationDelay, int dropProbability){
         super(ID, size, packageGenerationDelay, dropProbability);
@@ -24,10 +25,6 @@ public class PortaEntrada extends Porta{
         this.filaEntrada = new LinkedList<String>();
 
         this.currentPackageId = 1;
-
-        log_pacotes_criado_sucesso = ID + "log_pacotes_criado_sucesso";
-        log_pacotes_descartados = ID + "log_pacotes_descartados";
-        log_pacotes_fila_cheia = ID + "log_pacotes_fila_cheia";
     }
 
     public void criarPacote(){ //currentPackageID, dropProbability e packageGenerationDelay
@@ -35,15 +32,18 @@ public class PortaEntrada extends Porta{
         currentPackageId++;
 
         if( (double)Math.random() < (double)dropProbability/100.00 && !exit){ //Teste de drop
+            log_pacotes_descartados = new File(ID + "log_pacotes_descartados.txt");
             funcoesComuns.escreveLog(log_pacotes_descartados, pacote);
             return;
         }
 
+        log_pacotes_criado_sucesso = new File(ID + "log_pacotes_criado_sucesso.txt");
         funcoesComuns.escreveLog(log_pacotes_criado_sucesso, pacote);
 
         //Se pacote foi criado, testar se fila ta cheia
         if(filaEntrada.size() >= size && !exit){
-            funcoesComuns.escreveLog(log_pacotes_fila_cheia, funcoesComuns.novoHorarioPacote(pacote));
+            log_pacotes_fila_cheia = new File(ID + "log_pacotes_fila_cheia.txt");
+            funcoesComuns.escreveLog(log_pacotes_fila_cheia, pacote);
             return;
         }
 

@@ -1,3 +1,4 @@
+import java.io.File;
 import java.util.LinkedList;
 import java.util.concurrent.BrokenBarrierException;
 
@@ -10,9 +11,9 @@ public class PortaSaida extends Porta{
     int retransmissionProbability;
     LinkedList<String> filaSaida;
 
-    String log_pacotes_transmitido_sucesso;
-    String log_pacotes_retransmitidos;
-    String log_pacotes_nao_tratados_saida;
+    File log_pacotes_transmitido_sucesso;
+    File log_pacotes_retransmitidos;
+    File log_pacotes_nao_tratados_saida;
 
     public PortaSaida(String ID, int size, int packageFowardProbability, int packageTransmissionDelay, int retransmissionProbability){
         super(ID, size, packageTransmissionDelay, retransmissionProbability);
@@ -22,11 +23,6 @@ public class PortaSaida extends Porta{
         this.packageTransmissionDelay = super.t;
         this.filaSaida = new LinkedList<String>();
         this.packageFowardProbability = packageFowardProbability;
-
-        log_pacotes_transmitido_sucesso = ID + "log_pacotes_transmitido_sucesso";
-        log_pacotes_retransmitidos  = ID + "log_pacotes_retransmitidos";
-        log_pacotes_nao_tratados_saida = ID + "log_pacotes_nao_tratados_saida";
-
     }
 
     public void transmitirPacote(){ //Testar a retransmission e simular tempos de armazenamento
@@ -48,7 +44,8 @@ public class PortaSaida extends Porta{
 
         while(((double) Math.random() > (double) p / 100.00) && !exit) {
 
-            funcoesComuns.escreveLog(log_pacotes_retransmitidos, funcoesComuns.novoHorarioPacote(pacote));
+            log_pacotes_retransmitidos  = new File(ID + "log_pacotes_retransmitidos.txt");
+            funcoesComuns.escreveLog(log_pacotes_retransmitidos, pacote);
 
             thisRetProb = thisRetProb/2;
             p = 100 - thisRetProb;
@@ -61,9 +58,11 @@ public class PortaSaida extends Porta{
         }
 
         if(!exit){
-            funcoesComuns.escreveLog(log_pacotes_transmitido_sucesso, funcoesComuns.novoHorarioPacote(pacote));
+            log_pacotes_transmitido_sucesso = new File(ID + "log_pacotes_transmitido_sucesso.txt");
+            funcoesComuns.escreveLog(log_pacotes_transmitido_sucesso, pacote);
         } else{
-            funcoesComuns.escreveLog(log_pacotes_nao_tratados_saida, funcoesComuns.novoHorarioPacote(pacote));
+            log_pacotes_nao_tratados_saida = new File(ID + "log_pacotes_nao_tratados_saida.txt");
+            funcoesComuns.escreveLog(log_pacotes_nao_tratados_saida, pacote);
         }
 
     }
@@ -101,6 +100,7 @@ public class PortaSaida extends Porta{
 
         String novoPacote;
         while((novoPacote = filaSaida.poll()) != null){
+            log_pacotes_nao_tratados_saida = new File(ID + "log_pacotes_nao_tratados_saida.txt");
             funcoesComuns.escreveLog(log_pacotes_nao_tratados_saida, novoPacote);
         }
 

@@ -1,12 +1,13 @@
+import java.io.File;
 import java.util.ArrayList;
 import java.util.concurrent.BrokenBarrierException;
 
 public class Comutador implements Runnable{
     int switchDelay;
 
-    String log_pacotes_encaminhado_sucesso = "log_pacotes_encaminhado_sucesso";
-    String log_pacotes_fila_cheia = "log_pacotes_encaminhado_sucesso";
-    String log_pacotes_nao_tratados_comutacao = "log_pacotes_nao_tratados_comutacao";
+    File log_pacotes_encaminhado_sucesso;
+    File log_pacotes_fila_cheia;
+    File log_pacotes_nao_tratados_comutacao;
 
     ArrayList<PortaEntrada> portasEntrada;
     ArrayList<PortaSaida> portasSaida;
@@ -53,12 +54,15 @@ public class Comutador implements Runnable{
                     portaSaidaAtual = escolherPortaSaida();
                     if(!portaSaidaAtual.filaCheia()){
                         portaSaidaAtual.inserirFila(pacote);
-                        funcoesComuns.escreveLog(log_pacotes_encaminhado_sucesso, funcoesComuns.novoHorarioPacote(pacote));
+                        log_pacotes_encaminhado_sucesso = new File("log_pacotes_encaminhado_sucesso.txt");
+                        funcoesComuns.escreveLog(log_pacotes_encaminhado_sucesso, pacote);
                     }else{
-                        funcoesComuns.escreveLog(log_pacotes_fila_cheia, funcoesComuns.novoHorarioPacote(pacote));
+                        log_pacotes_fila_cheia = new File("log_pacotes_fila_cheia.txt");
+                        funcoesComuns.escreveLog(log_pacotes_fila_cheia, pacote);
                     }
                 }else{
-                    funcoesComuns.escreveLog(log_pacotes_nao_tratados_comutacao, funcoesComuns.novoHorarioPacote(pacote));
+                    log_pacotes_nao_tratados_comutacao = new File("log_pacotes_nao_tratados_comutacao.txt");
+                    funcoesComuns.escreveLog(log_pacotes_nao_tratados_comutacao, pacote);
                 }
 
                 //resetando para próximo ciclo
@@ -72,6 +76,8 @@ public class Comutador implements Runnable{
         for (i = 0; i < portasEntrada.size(); i++){
             String novoPacote;
             while((novoPacote = portasEntrada.get(i).getFilaEntrada().poll()) != null){
+                log_pacotes_nao_tratados_comutacao = new File("log_pacotes_nao_tratados_comutacao.txt");
+                //System.out.println(log_pacotes_nao_tratados_comutacao.exists());
                 funcoesComuns.escreveLog(log_pacotes_nao_tratados_comutacao, novoPacote);
             }
         }

@@ -1,3 +1,4 @@
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
@@ -13,13 +14,14 @@ public class funcoesComuns {
         return pacote + " " + formatter.format(date);
     }
 
-    public static void escreveLog(String nomeArquivo, String pacote){
-
+    public static void escreveLog(File arquivo, String pacote){
         try {
-            FileWriter arquivo = new FileWriter(nomeArquivo + ".txt", true);
-            PrintWriter p = new PrintWriter(arquivo);
+
+            FileWriter arquivoEscrita = new FileWriter("./registros/" + arquivo, true);
+            PrintWriter p = new PrintWriter(arquivoEscrita);
             p.println(pacote);
-            arquivo.close();
+            arquivoEscrita.close();
+
 
         } catch (IOException e) {
             e.printStackTrace();
