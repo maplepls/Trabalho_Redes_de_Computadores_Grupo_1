@@ -7,7 +7,7 @@ public class Porta implements Runnable{
     int p; //probabilidade de drop do pacote ou de escolha de porta de saída
     int t; //tempo de criação ou guardar na fila
 
-    public static boolean exit;
+    public static boolean exit; //Estado de saida. Caso true, o sistema começará a desligar
 
     public Porta(String ID, int size, int t, int p) {
         this.ID = ID;
