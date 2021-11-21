@@ -1,4 +1,5 @@
 import Exceptions.invalidArgException;
+import Exceptions.invalidComponentQuantity;
 import Exceptions.invalidPackageFowardSum;
 
 import java.io.File;
@@ -6,9 +7,9 @@ import java.io.IOException;
 
 public class app {
 
-    public static void main(String[] args) throws IOException, invalidArgException, invalidPackageFowardSum {
+    public static void main(String[] args) throws IOException, invalidArgException, invalidPackageFowardSum, invalidComponentQuantity {
         if(args.length != 1){
-            System.out.println("Quantidade de argumentos inválido");
+            System.out.println("Quantidade de argumentos inválido"); //checando se houve entrada de documento BNF
         }else{
             File theDir = new File("./registros");
             if(theDir.exists()){
@@ -21,6 +22,7 @@ public class app {
         }
     }
 
+    //apaga os logs existentes, caso haja.
     private static void apagarArquivos(File dir) {
         File[] listaConteudo = dir.listFiles();
         if(listaConteudo != null){

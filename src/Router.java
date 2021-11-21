@@ -1,4 +1,5 @@
 import Exceptions.invalidArgException;
+import Exceptions.invalidComponentQuantity;
 import Exceptions.invalidPackageFowardSum;
 
 import java.awt.event.KeyEvent;
@@ -35,7 +36,7 @@ public class Router {
         this.nomeArquivo = arg;
     }
 
-    public void rodarRoteador() throws IOException, invalidArgException, invalidPackageFowardSum {
+    public void rodarRoteador() throws IOException, invalidArgException, invalidPackageFowardSum, invalidComponentQuantity {
 
        String caminhoArquivo = nomeArquivo;
        BufferedReader br = new BufferedReader(new FileReader(caminhoArquivo));
@@ -72,27 +73,33 @@ public class Router {
         return;
     }
 
-    //Verificar somatorio da PackageFowardProbability se é 100 antes de rodar :D
+    public void inicializarThreads() throws invalidArgException, invalidPackageFowardSum, invalidComponentQuantity {
+        barreira = new CyclicBarrier(linhasBNF.size());
 
-    public void inicializarThreads() throws invalidArgException, invalidPackageFowardSum {
-        barreira = new CyclicBarrier(linhasBNF.size()
-        );
-        int somaProbsFoward = 0;
-
-        //Ainda falta colocar os gate.await() nas threads filhas...
+        int somaProbsFoward = 0; //variável para checagem de se a soma das probabilidades de packageFowardProbability é 100%
+        boolean checaSwitch = false; //variável que checa se há 1 e apenas 1 comutador
+        boolean checaEntrada = false; //variável que checa se há pelo menos uma porta de entrada
+        boolean checaSaida = false; //variável que checa se há pelo menos uma porta de saída
 
         for(int i = 0; i < linhasBNF.size(); i++){
             String line = linhasBNF.get(i);
             String[] palavra = line.split(" ");
 
             if (palavra[0].equals("switch-fabric:")) {
-                switchDelayComutador = Integer.parseInt(palavra[1]);
+                if(checaSwitch){
+                    throw new invalidComponentQuantity();
+                }else{
+                    switchDelayComutador = Integer.parseInt(palavra[1]);
+                    checaSwitch = true;
+                }
+
             } else if (palavra[0].equals("input:")) {
                 pEntrada = new PortaEntrada(palavra[1], Integer.parseInt(palavra[2]), Integer.parseInt(palavra[3]), Integer.parseInt(palavra[4]));
                 Thread thrdEntrada = new Thread(thrdGpPortasEntrada, pEntrada, palavra[1]);
 
                 portasEntrada.add(pEntrada);
                 thrdEntrada.start();
+                checaEntrada = true;
 
             } else if (palavra[0].equals("output:")){
                 pSaida = new PortaSaida(palavra[1], Integer.parseInt(palavra[2]), Integer.parseInt(palavra[3]), Integer.parseInt(palavra[4]), Integer.parseInt(palavra[5]));
@@ -105,7 +112,7 @@ public class Router {
                 if(somaProbsFoward > 100 ){
                     throw new invalidPackageFowardSum(String.valueOf(somaProbsFoward));
                 }
-
+                checaSaida = true;
             }
             else{
                 throw new invalidArgException(palavra[0]);
@@ -115,6 +122,8 @@ public class Router {
         //Verifica se ficou menor que 100 as probs
         if(somaProbsFoward < 100){
             throw new invalidPackageFowardSum(String.valueOf(somaProbsFoward));
+        }else if(!checaSwitch||!checaEntrada||!checaSaida){ //checa se a quantidade de componentes para roteador está errado
+            throw new invalidComponentQuantity();
         }
 
     }

@@ -16,6 +16,8 @@ public class Comutador implements Runnable{
 
     public static boolean exit;
 
+    public int iteradorPortaEntrada = 0; //indica qual porta de entrada será checada
+
     public Comutador(int switchDelay, ArrayList<PortaEntrada> portasEntrada, ArrayList<PortaSaida> portasSaida){
         this.switchDelay = switchDelay;
         this.portasEntrada = portasEntrada;
@@ -33,51 +35,15 @@ public class Comutador implements Runnable{
             e.printStackTrace();
         }
 
-        int i = 0;
-        PortaEntrada portaEntradaAtual;
-        PortaSaida portaSaidaAtual;
-
-        while(!exit){
-            portaEntradaAtual = portasEntrada.get(i);
-            pacote = portaEntradaAtual.getFirstFilaEntrada();
-            if(pacote != null){
-                pacote = funcoesComuns.novoHorarioPacote(pacote);
-                try {
-                    Thread.sleep(switchDelay);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                //escolhe porta saida com packageFowardProbability
-                portaSaidaAtual = escolherPortaSaida();
-                if(!exit){
-                    portaSaidaAtual = escolherPortaSaida();
-                    if(!portaSaidaAtual.filaCheia()){
-                        portaSaidaAtual.inserirFila(pacote);
-                        log_pacotes_encaminhado_sucesso = new File("log_pacotes_encaminhado_sucesso.txt");
-                        funcoesComuns.escreveLog(log_pacotes_encaminhado_sucesso, pacote);
-                    }else{
-                        log_pacotes_fila_cheia = new File("log_pacotes_fila_cheia.txt");
-                        funcoesComuns.escreveLog(log_pacotes_fila_cheia, pacote);
-                    }
-                }else{
-                    log_pacotes_nao_tratados_comutacao = new File("log_pacotes_nao_tratados_comutacao.txt");
-                    funcoesComuns.escreveLog(log_pacotes_nao_tratados_comutacao, pacote);
-                }
-
-                //resetando para próximo ciclo
-                portaSaidaAtual = null;
-                portaEntradaAtual = null;
-                pacote = null;
-            }
-            i = (i + 1) % portasEntrada.size(); //iterando próxima porta
+        //Loop verificando o estado de saída
+        while (!exit) {
+            encaminharPacote();
         }
 
         for (i = 0; i < portasEntrada.size(); i++){
             String novoPacote;
             while((novoPacote = portasEntrada.get(i).getFilaEntrada().poll()) != null){
                 log_pacotes_nao_tratados_comutacao = new File("log_pacotes_nao_tratados_comutacao.txt");
-                //System.out.println(log_pacotes_nao_tratados_comutacao.exists());
                 funcoesComuns.escreveLog(log_pacotes_nao_tratados_comutacao, novoPacote);
             }
         }

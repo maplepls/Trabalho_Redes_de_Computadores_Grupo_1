@@ -75,15 +75,7 @@ public class PortaEntrada extends Porta{
         }
 
         while (!exit) {
-            try {
-                Thread.sleep(packageGenerationDelay);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            if (!exit) {
-                criarPacote();
-            }
+            criarPacote();
         }
         Thread.currentThread().interrupt();
     }
